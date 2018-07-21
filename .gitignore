@@ -1,0 +1,4 @@
+#ignore ide stuff
+.idea/
+.ipynb_checkpoints/
+.vscode/
