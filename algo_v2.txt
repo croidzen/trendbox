@@ -1,0 +1,25 @@
+
+
+Daten einlesen
+df aus Barnummer, Hoch, Tief bilden
+Höchstes Hoch, kleinstes Tief und deren Positionen berechnen
+Diese Punkte sind die initialen Arbeitspunkte
+Richtung der Bearbeitung ist die Richtung in der der andere Extrempunkt zu finden ist.
+
+Für High und Low durchführen:
+Loop
+    Von Arbeitspunkt ausgehend den Wert finden, dessen gemeinsame Grade die geringste Steigung hat
+    Dieser Punkt ist neuer Arbeitspunkt.
+Until Datenende
+
+
+
+    Von Pos HH in Richtung Pos KT bis Ende brechenen, welche Steigung die gemeinsame Grade mit HH hat
+    Pos und Wert kleinster Steigung finden
+    Von Pos KT in Richtung Pos HH bis Ende brechenen, welche Steigung die gemeinsame Grade mit KT hat
+    Pos und Wert kleinster Steigung finden
+    Typ, Pos und Wert des kleineren Wertes finden
+    Abstand der Graden mit dieser Steigung durch HH und KT brechnen
+    Gefundener Stützpunkt ersetzt HH bzw KT
+    Von Pos SP in entg. Richtung zu Pos HH/KT(Vorgänger) bis Ende brechenen, welche Steigung die mit SP gemeinsame Grade hat
+    Kleinerer Wert beider Seiten ist neue MaxSteigung
