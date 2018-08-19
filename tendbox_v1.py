@@ -22,8 +22,8 @@ max_high_pos = df['High'].idxmax()
 min_low_pos = df['Low'].idxmin()
 
 #support points and slope to them from the previous point
-top_support_points = [[max_high_pos], [Nan]]
-bot_support_pionts = [[min_low_pos], [Nan]]
+top_support_points = [[max_high_pos], ['NaN']]
+bot_support_pionts = [[min_low_pos], ['NaN']]
 
 top_rot_pos = max_high_pos
 bot_rot_pos = min_low_pos
@@ -59,14 +59,14 @@ length = endpos_high - startpos_high
 y = df.loc[top_rot_pos, 'High']
 # Transforn to homogenous series
 y = pd.Series(y, index=range(startpos_high, startpos_high + length))
-# Get other 'High' values 
+# Get other 'High' values
 yi = df.loc[startpos_high:endpos_high, 'High']
 
 # Get top rotation position
 x = top_rot_pos
 # Transforn to homogenous series
 x = pd.Series(x, index=range(startpos_high, startpos_high + length))
-# Get other position values 
+# Get other position values
 xi = df.index.tolist()[startpos_high:endpos_high]
 
 # Paste all series into formula
@@ -90,14 +90,14 @@ length = endpos_low - startpos_low
 y = df.loc[bot_rot_pos, 'Low']
 # Transforn to homogenous series
 y = pd.Series(y, index=range(startpos_low, startpos_low + length))
-# Get other 'Low' values 
+# Get other 'Low' values
 yi = df.loc[startpos_low:endpos_low, 'Low']
 
 # Get bottom rotation position
 x = bot_rot_pos
 # Transforn to homogenous series
 x = pd.Series(x, index=range(startpos_low, startpos_low + length))
-# Get other position values 
+# Get other position values
 xi = df.index.tolist()[startpos_low:endpos_low]
 
 # Paste all series into formula
@@ -148,14 +148,14 @@ if(positive_slope):
     else:
         bot_rot_pos = df['bot_slope'].idxmin()
         startpos_low = bot_rot_pos + 1
-    
+
 else:
     if df['top_slope'].max() > df['bot_slope'].max():
         top_rot_pos = df['top_slope'].idxmax()
         startpos_high = top_rot_pos + 1
     else:
         bot_rot_pos = df['bot_slope'].idxmax()
-        endpos_low = bot_rot_pos - 1 
+        endpos_low = bot_rot_pos - 1
 
 
 #%%----------------------------------------------------------------------------
@@ -179,14 +179,14 @@ length = endpos_low - startpos_low
 y = df.loc[bot_rot_pos, 'Low']
 # Transforn to homogenous series
 y = pd.Series(y, index=range(startpos_low, startpos_low + length))
-# Get other 'Low' values 
+# Get other 'Low' values
 yi = df.loc[startpos_low:endpos_low, 'Low']
 
 # Get bottom rotation position
 x = bot_rot_pos
 # Transforn to homogenous series
 x = pd.Series(x, index=range(startpos_low, startpos_low + length))
-# Get other position values 
+# Get other position values
 xi = df.index.tolist()[startpos_low:endpos_low]
 
 # Paste all series into formula
