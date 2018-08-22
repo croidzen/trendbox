@@ -148,8 +148,16 @@ class TrendBox:
         # TODO: return values
 
 
-def get_trendbox():
-    # Create object and call its methods
-    my_trendbox = TrendBox(hi_lo_df=df)
-    
-    # TODO: return
+# Create object and ..
+my_trendbox = TrendBox(hi_lo_df=df)
+
+def get_trendbox_slope(my_trendbox):
+    pass
+
+def get_trendbox_width(my_trendbox):
+    pass
+
+def get_trendbox_upper_endpos(my_trendbox):
+    pass
+
+
