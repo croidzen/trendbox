@@ -12,12 +12,10 @@ plt.rcParams['figure.facecolor'] = '#282C34'
 
 
 #%%----------------------------------------------------------------------------
-
 class TrendBox:
     '''
     Class definition
     '''
-
     def __init__(self, hi_lo_df):
         '''
         Constructor
@@ -55,6 +53,7 @@ class TrendBox:
             self.startpos_low = 0
             self.endpos_low = self.bot_rot_pos - 1
 
+
     def __calc_top_slope(self):
         '''
         Calculate top-slope values for all positions
@@ -85,6 +84,7 @@ class TrendBox:
 
         # TODO Add closest support piont to list
         # self.top_support_points.append(df['top_slope'].idxmin())
+
 
     def __calc_bottom_slope (self):
         '''
@@ -117,33 +117,47 @@ class TrendBox:
         # TODO Add closest support piont to list
         # self.top_support_points.append(df['bot_slope'].idxmin())
 
-    def __update_rotation_pos(self):
-        '''
-        Set new rotation position plus start-/endpiont
-        '''
 
+    def __update_upper_rotation_pos(self):
+        '''
+        Set new upper rotation position plus start-/endpiont
+        '''
         if(self.positive_slope):
-            if self.df['top_slope'].min() < self.df['bot_slope'].min():
-                self.top_rot_pos = self.df['top_slope'].idxmin()
-                self.endpos_high = self.top_rot_pos - 1
-            else:
-                self.bot_rot_pos = self.df['bot_slope'].idxmin()
-                self.startpos_low = self.bot_rot_pos + 1
+            self.top_rot_pos = self.df['top_slope'].idxmin()
+            self.endpos_high = self.top_rot_pos - 1
         else:
-            if self.df['top_slope'].max() > self.df['bot_slope'].max():
-                self.top_rot_pos = self.df['top_slope'].idxmax()
-                self.startpos_high = self.top_rot_pos + 1
-            else:
-                self.bot_rot_pos = self.df['bot_slope'].idxmax()
-                self.endpos_low = self.bot_rot_pos - 1
+            self.top_rot_pos = self.df['top_slope'].idxmax()
+            self.startpos_high = self.top_rot_pos + 1
+            
     
+    def __update_lower_rotation_pos(self):
+        '''
+        Set new lower rotation position plus start-/endpiont
+        '''
+        if(self.positive_slope):
+            self.bot_rot_pos = self.df['bot_slope'].idxmin()
+            self.startpos_low = self.bot_rot_pos + 1
+        else:
+            self.bot_rot_pos = self.df['bot_slope'].idxmax()
+            self.endpos_low = self.bot_rot_pos - 1
+
+
     def calc_trendbox(self):
         '''
         Calculate trendbox
         '''
         self.__calc_top_slope()
         self.__calc_bottom_slope()
-        self.__update_rotation_pos()
+        
+        if(self.positive_slope):
+            if self.df['top_slope'].min() < self.df['bot_slope'].min():
+                
+                
+                self.__update_rotation_pos()
+
+        else:
+            if self.df['top_slope'].max() > self.df['bot_slope'].max():
+
 
         # TODO: return values
 
@@ -153,3 +167,36 @@ def get_trendbox():
     my_trendbox = TrendBox(hi_lo_df=df)
     
     # TODO: return
+
+
+
+
+
+
+#%%----------------------------------------------------------------------------
+   '''
+    Plot trendbox
+    '''
+
+    # plt.figure(1)
+    # plt.subplot(311)
+
+    # plt.plot(my_trendbox.df.index.values, my_trendbox.df['High'])
+    # x1 = my_trendbox.df['top_slope'].idxmin()
+    # x2 = my_trendbox.top_rot_pos
+    # y1 = my_trendbox.df.loc[my_trendbox.df['top_slope'].idxmin(), 'High']
+    # y2 = my_trendbox.df.loc[my_trendbox.top_rot_pos, 'High']
+    # plt.plot([x1, x2], [y1, y2])
+
+    # plt.plot(my_trendbox.df.index.values, my_trendbox.df['Low'])
+    # x1 = df['bot_slope'].idxmin()
+    # x2 = bot_rot_pos
+    # y1 = df.loc[df['bot_slope'].idxmin(), 'Low']
+    # y2 = df.loc[bot_rot_pos, 'Low']
+    # plt.plot([x1, x2], [y1, y2])
+
+    # plt.subplot(312)
+    # plt.plot(df.index.values, df['top_slope'])
+
+    # plt.subplot(313)
+    # plt.plot(df.index.values, df['bot_slope'])
