@@ -1,4 +1,6 @@
 #%%----------------------------------------------------------------------------
+editor = 'vscode'
+
 import trendbox_v1
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -22,7 +24,8 @@ def main():
     df = df.drop(['Open', 'Close', 'Adj Close', 'Volume'], axis='columns')
 
     # TODO:
-    my_trendbox_slope = get_trendbox()
-
+    # my_trendbox_slope = get_trendbox()
+    # Create object and ..
+    # my_trendbox = TrendBox(hi_lo_df=df)
 
  
