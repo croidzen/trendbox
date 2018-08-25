@@ -11,36 +11,32 @@ def main():
     # t0 = time.clock()
 
     # Prepare data
-    # editor = 'vscode'
-    # if (editor == 'vscode'):
-    #     path = 'C:\\Users\\Martin\\Dev\\trendbox\\Data\\msft.csv'
-    # else:
-    #     path = 'Data\\MSFT.csv'
-
-    # df = pd.read_csv(filepath_or_buffer=path, header=1, index_col=0)
-    # df = df.drop(['Open', 'Close', 'Adj Close', 'Volume'], axis='columns')
+    path = 'Data\\IBM.csv'
+    df = pd.read_csv(filepath_or_buffer=path, header=1, index_col=0)
+    df = df.drop(['Open', 'Close', 'Adj Close', 'Volume'], axis='columns')
     # df = df[-250:]
 
     # t1 = time.clock()
     # print('Preparation in main(): %.4f' %(t1-t0))
 
-    # my_trendbox = TrendBox(hi_lo_df=df)
-    # my_trendbox.calc_trendbox()
-    # my_trendbox.plot()
+    my_trendbox = trendbox.TrendBox(hi_lo_df=df)
+    my_trendbox.calc_trendbox()
+    my_trendbox.plot()
 
-    t0 = time.clock()
-    for filename in os.listdir('Data'):
+    # t0 = time.clock()
+    # for filename in os.listdir('Data'):
                 
-        df = pd.read_csv(filepath_or_buffer=('Data\\' + filename), header=1, index_col=0)
-        df = df.drop(['Open', 'Close', 'Adj Close', 'Volume'], axis='columns')
-        df = df[-250:]
+    #     df = pd.read_csv(filepath_or_buffer=('Data\\' + filename), header=1, index_col=0)
+    #     print(filename)
+    #     df = df.drop(['Open', 'Close', 'Adj Close', 'Volume'], axis='columns')
+    #     df = df[-250:]
 
-        my_trendbox = trendbox.TrendBox(hi_lo_df=df)
-        my_trendbox.calc_trendbox()
-        # my_trendbox.plot()
+    #     my_trendbox = trendbox.TrendBox(hi_lo_df=df)
+    #     my_trendbox.calc_trendbox()
+    #     # my_trendbox.plot()
 
-    t1 = time.clock()
-    print('All files calculated: %.4f' %(t1-t0))
+    # t1 = time.clock()
+    # print('All files calculated: %.4f' %(t1-t0))
 
     # my_trendbox_slope = my_trendbox.get_trendbox_slope()
 

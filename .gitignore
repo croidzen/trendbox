@@ -1,4 +1,7 @@
-#ignore ide stuff
+# ignore ide stuff
 .idea/
 .ipynb_checkpoints/
 .vscode/
+
+# ignore python stuff
+.__pycache__/
