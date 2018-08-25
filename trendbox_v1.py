@@ -2,17 +2,24 @@
 '''
 Preparations
 '''
+import time
+t0 = time.clock()
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import math
+import time
 
 plt.style.use('dark_background')
 plt.rcParams['figure.figsize'] = [13, 8]
 plt.rcParams['axes.facecolor'] = '#121417'
 plt.rcParams['figure.facecolor'] = '#282C34'
 
+t1 = time.clock()
+print('\n')
+print('Preparations: %.4f' %(t1-t0))
 
-#%%----------------------------------------------------------------------------
+
 class TrendBox:
     '''
     Class definition
@@ -21,6 +28,8 @@ class TrendBox:
         '''
         Constructor
         '''
+        t0 = time.clock()
+
         self.df = hi_lo_df
         self.df['top_slope'] = pd.Series(float('NaN'), index=self.df.index)
         self.df['bot_slope'] = pd.Series(float('NaN'), index=self.df.index)
@@ -54,15 +63,21 @@ class TrendBox:
             self.endpos_low = self.bot_rot_pos - 1
 
         self.last_trendbox_width = 0
+        self.slope_defined_by_upside = False
 
         # self.calc_trendbox() aufrufen?
 
+        t1 = time.clock()
+        print('__init__: %.4f' %(t1-t0))
 
-    def __calc_top_slope(self):
+
+    def __calc_top_slopes(self):
         '''
         Calculate top-slope values for all positions
         slope = (y-yi)/(x-xi)
         '''
+        t0 = time.clock()
+
         # Preparations
         self.df['top_slope'] = pd.Series(float('NaN'), index=self.df.index)
         length = self.endpos_high - self.startpos_high
@@ -83,7 +98,7 @@ class TrendBox:
 
         # Paste all series into formula
         self.df.loc[self.startpos_high:self.endpos_high, 'top_slope'] = (
-            (y.sub(yi)).div(x.sub(xi))).mul(100)
+            (y.sub(yi)).div(x.sub(xi)))
 
         # Add closest support piont to list
         if (self.positive_slope):
@@ -91,12 +106,31 @@ class TrendBox:
         else:
             self.top_support_points.append([self.df['top_slope'].idxmax(), self.df['top_slope'].max()])
 
+        # Set slope defining side
+        if (self.positive_slope):
+            if (self.top_support_points[-1][1] < self.bot_support_points[-1][1]):
+                self.slope_defined_by_upside = True
+            else:
+                self.slope_defined_by_upside = False
+        else:
+            if (self.top_support_points[-1][1] > self.bot_support_points[-1][1]):
+                self.slope_defined_by_upside = True
+            else:
+                self.slope_defined_by_upside = False
 
-    def __calc_bottom_slope (self):
+        t1 = time.clock()
+        print('__calc_top_slopes: %.4f' %(t1-t0))
+        print('\t' + str(self.top_support_points[-1]) + 
+            str(self.df.loc[self.top_support_points[-1][0], 'High']))
+
+
+    def __calc_bottom_slopes(self):
         '''
         Calculate bot-slope values for all positions
         slope = (y-yi)/(x-xi)
         '''
+        t0 = time.clock()
+
         # Preparations
         self.df['bot_slope'] = pd.Series(float('NaN'), index=self.df.index)
         length = self.endpos_low - self.startpos_low
@@ -117,7 +151,7 @@ class TrendBox:
 
         # Paste all series into formula
         self.df.loc[self.startpos_low:self.endpos_low, 'bot_slope'] = (
-            (y.sub(yi)).div(x.sub(xi))).mul(100)
+            (y.sub(yi)).div(x.sub(xi)))
 
         # Add closest support piont to list
         if (self.positive_slope):
@@ -125,23 +159,49 @@ class TrendBox:
         else:
             self.bot_support_points.append([self.df['bot_slope'].idxmax(), self.df['bot_slope'].max()])
 
+        # Set slope defining side
+        if (self.positive_slope):
+            if (self.top_support_points[-1][1] < self.bot_support_points[-1][1]):
+                self.slope_defined_by_upside = True
+            else:
+                self.slope_defined_by_upside = False
+        else:
+            if (self.top_support_points[-1][1] > self.bot_support_points[-1][1]):
+                self.slope_defined_by_upside = True
+            else:
+                self.slope_defined_by_upside = False
+            
+
+        t1 = time.clock()
+        print('__calc_bottom_slopes: %.4f' %(t1-t0))
+        print('\t' + str(self.bot_support_points[-1]) +
+            str(self.df.loc[self.bot_support_points[-1][0], 'Low']))
+
 
     def __update_upper_rotation_pos(self):
         '''
         Set new upper rotation position plus start-/endpiont
         '''
+        t0 = time.clock()
+
         if (self.positive_slope):
             self.top_rot_pos = self.df['top_slope'].idxmin()
             self.endpos_high = self.top_rot_pos - 1
         else:
             self.top_rot_pos = self.df['top_slope'].idxmax()
             self.startpos_high = self.top_rot_pos + 1
+
+        t1 = time.clock()
+        print('__update_upper_rotation_pos: %.4f' %(t1-t0))
+
             
     
     def __update_lower_rotation_pos(self):
         '''
         Set new lower rotation position plus start-/endpiont
         '''
+        t0 = time.clock()
+
         if (self.positive_slope):
             self.bot_rot_pos = self.df['bot_slope'].idxmin()
             self.startpos_low = self.bot_rot_pos + 1
@@ -149,47 +209,50 @@ class TrendBox:
             self.bot_rot_pos = self.df['bot_slope'].idxmax()
             self.endpos_low = self.bot_rot_pos - 1
 
+        t1 = time.clock()
+        print('__update_lower_rotation_pos: %.4f' %(t1-t0))
+
 
     def calc_trendbox(self):
         '''
         Calculate trendbox
         '''
-        self.__calc_top_slope()
-        self.__calc_bottom_slope()
+        t0 = time.clock()
+
+        self.__calc_top_slopes()
+        self.__calc_bottom_slopes()
         
         while True:
             self.last_trendbox_width = self.get_trendbox_width()
             
-            if (self.positive_slope):
-                if (self.top_support_points[-1][1] < self.bot_support_points[-1][1]):
-                    self.__update_upper_rotation_pos()
-                    self.__calc_top_slope()
-                else:
-                    self.__update_lower_rotation_pos()
-                    self.__calc_bottom_slope()
+            if (self.slope_defined_by_upside):
+                self.__update_upper_rotation_pos()
+                self.__calc_top_slopes()
             else:
-                if (self.top_support_points[-1][1] > self.bot_support_points[-1][1]):
-                    self.__update_upper_rotation_pos()
-                    self.__calc_top_slope()
-                else:
-                    self.__update_lower_rotation_pos()
-                    self.__calc_bottom_slope()
+                self.__update_lower_rotation_pos()
+                self.__calc_bottom_slopes()
             
             if(self.get_trendbox_width() > self.last_trendbox_width):
                 break
 
+        t1 = time.clock()
+        print('calc_trendbox: %.4f' %(t1-t0))
+
 
     def get_trendbox_slope(self):
-        if (self.positive_slope):
-            if (self.top_support_points[-1][1] < self.bot_support_points[-1][1]):
-                m = self.top_support_points[-1][1]
-            else:
-                m = self.bot_support_points[-1][1]
+        '''
+        TODO
+        '''
+        t0 = time.clock()
+
+        if (self.slope_defined_by_upside):
+            m = self.top_support_points[-1][1]
         else:
-            if (self.top_support_points[-1][1] > self.bot_support_points[-1][1]):
-                m = self.top_support_points[-1][1]
-            else:
-                m = self.bot_support_points[-1][1]
+            m = self.bot_support_points[-1][1]
+            
+        t1 = time.clock()
+        print('get_trendbox_slope: %.4f' %(t1-t0))
+        print('\t' + str(m))
         return m
 
 
@@ -201,19 +264,34 @@ class TrendBox:
         d = |b2-b1| / sqrt(m*m+1)
 
         Get b from point and slope:
-        b1 = y1 - m*x1
+        b1 = y1 - m * x1
         '''
+        t0 = time.clock()
+
         m = self.get_trendbox_slope()
         
-        x1 = self.top_support_points[-1][0]
-        y1 = self.df.loc[x1, 'High']
-        b1 = y1 - (m * x1)
+        if (self.slope_defined_by_upside):
+            x1 = self.top_support_points[-1][0]
+            y1 = self.df.loc[x1, 'High']
+            b1 = y1 - (m * x1)
 
-        x2 = self.bot_support_points[-1][0]
-        y2 = self.df.loc[x2, 'Low']
-        b2 = y2 - (m * x2)
+            x2 = self.bot_support_points[-2][0]
+            y2 = self.df.loc[x2, 'Low']
+            b2 = y2 - (m * x2)
+        else:
+            x1 = self.bot_support_points[-1][0]
+            y1 = self.df.loc[x1, 'Low']
+            b1 = y1 - (m * x1)
+
+            x2 = self.top_support_points[-2][0]
+            y2 = self.df.loc[x2, 'High']
+            b2 = y2 - (m * x2)
 
         d = abs(b2 - b1) / math.sqrt(m * m + 1)
+
+        t1 = time.clock()
+        print('get_trendbox_width: %.4f' %(t1-t0))
+        print('\t' + str(d))
         return d
 
 
@@ -225,64 +303,70 @@ class TrendBox:
         '''
         Plot result
         '''
+        t0 = time.clock()
+
         # 'High' and 'Low' values
-        # plt.plot(self.df.index.values, self.df['High'])
-        # plt.plot(self.df.index.values, self.df['Low'])
+        plt.plot(self.df.index.values, self.df['High'])
+        plt.plot(self.df.index.values, self.df['Low'])
 
         # Support points
         # plt.plot(self.top_support_points)
         # plt.plot(self.bot_support_points)
 
         # Trendbox
-        if (self.positive_slope):
-            if (self.top_support_points[-1][1] < self.bot_support_points[-1][1]):
-                x1 = self.top_support_points[-1][0]
-                y1 = self.df.loc[x1, 'High']
-                
-                x2 = self.top_support_points[-2][0]
-                y2 = self.df.loc[x2, 'High']
+        # y=mx+b (explicit form)
+        # y-y1=m(x-x1) (piont slope form)
+        # -> b=y1-m*x1
+        # -> y=m(x-x1)+y1
+        m = self.get_trendbox_slope()
 
-                x3 = self.bot_support_points[-2][0]
-                y3 = self.df.loc[x3, 'Low']
-                
-                x4 = self.bot_support_points[-1][0]
-                y4 = y1 - self.get_trendbox_width()
-            else:
-                x1 = self.bot_support_points[-1][0]
-                y1 = self.df.loc[x1, 'Low']
-                
-                x2 = self.bot_support_points[-2][0]
-                y2 = self.df.loc[x2, 'Low']
+        if (self.slope_defined_by_upside):
+            x1 = self.top_support_points[-1][0]
+            y1 = self.df.loc[x1, 'High']
+            
+            x2 = self.top_support_points[-2][0]
+            y2 = self.df.loc[x2, 'High']
 
-                x3 = self.top_support_points[-2][0]
-                y3 = self.df.loc[x3, 'High']
-                
-                x4 = self.top_support_points[-1][0]
-                y4 = y1 + self.get_trendbox_width()
+            x3 = self.bot_support_points[-2][0]
+            y3 = self.df.loc[x3, 'Low']
+            
+            x4 = self.bot_support_points[-1][0]
+            y4 = y1 - self.get_trendbox_width()
         else:
-            if (self.top_support_points[-1][1] > self.bot_support_points[-1][1]):
-                pass
-            else:
-                pass
+            x1 = self.bot_support_points[-1][0]
+            y1 = self.df.loc[x1, 'Low']
+            
+            x2 = self.bot_support_points[-2][0]
+            y2 = self.df.loc[x2, 'Low']
 
-        # plt.plot([x1, x2], [y1, y2])
-        # plt.plot([x3, x4], [y3, y4])
+            x_bot_min = 0
+            y_bot_min = m * (x_bot_min - x1) + y1
 
-        print('x1: ' + str(x1))
-        print('x2: ' + str(x2))
-        print('x3: ' + str(x3))
-        print('x4: ' + str(x4))
+            x_bot_max = len(self.df)
+            y_bot_max = m * (x_bot_max - x1) + y1
+
+            x_top = self.top_support_points[-2][0]
+            y_top = self.df.loc[x_top, 'High']
+            
+            x_top_min = 0
+            y_top_min = y_top - (m * x_top)
+            x_top_max = len(self.df)
+            y_top_max = m * (x_top_max - x_top) + y_top
         
-        print('y1: ' + str(y1))
-        print('y2: ' + str(y2))
-        print('y3: ' + str(y3))
-        print('y4: ' + str(y4))
+        plt.plot([x_bot_min, x_bot_max], [y_bot_min, y_bot_max])
+        plt.plot([x_top_min, x_top_max], [y_top_min, y_top_max])
+        plt.show()
+
+        t1 = time.clock()
+        print('plot: %.4f' %(t1-t0))
         
 #%%----------------------------------------------------------------------------
 # def main():
 '''
 Call methods
 '''
+t0 = time.clock()
+
 # Prepare data
 editor = 'vscode'
 if (editor == 'vscode'):
@@ -291,6 +375,9 @@ else:
     path = 'Data\\MSFT.csv'
 df = pd.read_csv(filepath_or_buffer=path, header=1, index_col=0)
 df = df.drop(['Open', 'Close', 'Adj Close', 'Volume'], axis='columns')
+
+t1 = time.clock()
+print('Preparation in main(): %.4f' %(t1-t0))
 
 my_trendbox = TrendBox(hi_lo_df=df)
 my_trendbox.calc_trendbox()
