@@ -31,8 +31,8 @@ class TrendBox:
         self.min_low_pos = self.df['Low'].idxmin()
 
         #support points and slope to them from the previous point
-        self.top_support_points = [[self.max_high_pos], [float('NaN')]]
-        self.bot_support_points = [[self.min_low_pos], [float('NaN')]]
+        self.top_support_points = [[self.max_high_pos, float('NaN')]]
+        self.bot_support_points = [[self.min_low_pos, float('NaN')]]
 
         self.top_rot_pos = self.max_high_pos
         self.bot_rot_pos = self.min_low_pos
@@ -53,7 +53,7 @@ class TrendBox:
             self.startpos_low = 0
             self.endpos_low = self.bot_rot_pos - 1
 
-        self.last_trendbox_width
+        self.last_trendbox_width = 0
 
         # self.calc_trendbox() aufrufen?
 
@@ -87,9 +87,9 @@ class TrendBox:
 
         # Add closest support piont to list
         if (self.positive_slope):
-            self.top_support_points.append(self.df['top_slope'].idxmin(), self.df['top_slope'].min())
+            self.top_support_points.append([self.df['top_slope'].idxmin(), self.df['top_slope'].min()])
         else:
-            self.top_support_points.append(self.df['top_slope'].idxmax(), self.df['top_slope'].max())
+            self.top_support_points.append([self.df['top_slope'].idxmax(), self.df['top_slope'].max()])
 
 
     def __calc_bottom_slope (self):
@@ -121,9 +121,9 @@ class TrendBox:
 
         # Add closest support piont to list
         if (self.positive_slope):
-            self.bot_support_points.append(self.df['bot_slope'].idxmin(), self.df['bot_slope'].min())
+            self.bot_support_points.append([self.df['bot_slope'].idxmin(), self.df['bot_slope'].min()])
         else:
-            self.bot_support_points.append(self.df['bot_slope'].idxmax(), self.df['bot_slope'].max())
+            self.bot_support_points.append([self.df['bot_slope'].idxmax(), self.df['bot_slope'].max()])
 
 
     def __update_upper_rotation_pos(self):
@@ -226,12 +226,12 @@ class TrendBox:
         Plot result
         '''
         # 'High' and 'Low' values
-        plt.plot(self.df.index.values, self.df['High'])
-        plt.plot(self.df.index.values, self.df['Low'])
+        # plt.plot(self.df.index.values, self.df['High'])
+        # plt.plot(self.df.index.values, self.df['Low'])
 
         # Support points
-        plt.plot(self.top_support_points)
-        plt.plot(self.bot_support_points)
+        # plt.plot(self.top_support_points)
+        # plt.plot(self.bot_support_points)
 
         # Trendbox
         if (self.positive_slope):
@@ -265,29 +265,36 @@ class TrendBox:
             else:
                 pass
 
-            plt.plot([x1, x2], [y1, y2])
-            plt.plot([x3, x4], [y3, y4])
+        # plt.plot([x1, x2], [y1, y2])
+        # plt.plot([x3, x4], [y3, y4])
 
-
+        print('x1: ' + str(x1))
+        print('x2: ' + str(x2))
+        print('x3: ' + str(x3))
+        print('x4: ' + str(x4))
+        
+        print('y1: ' + str(y1))
+        print('y2: ' + str(y2))
+        print('y3: ' + str(y3))
+        print('y4: ' + str(y4))
+        
 #%%----------------------------------------------------------------------------
 # def main():
-    '''
-    Call methods
-    '''
-    # Prepare data
-    editor = 'vscode'
-    if (editor == 'vscode'):
-        path = 'C:\\Users\\Martin\\Dev\\trendbox\\Data\\MSFT.csv'
-    else:
-        path = 'Data\\MSFT.csv'
-    df = pd.read_csv(filepath_or_buffer=path, header=1, index_col=0)
-    df = df.drop(['Open', 'Close', 'Adj Close', 'Volume'], axis='columns')
+'''
+Call methods
+'''
+# Prepare data
+editor = 'vscode'
+if (editor == 'vscode'):
+    path = 'C:\\Users\\Martin\\Dev\\trendbox\\Data\\MSFT.csv'
+else:
+    path = 'Data\\MSFT.csv'
+df = pd.read_csv(filepath_or_buffer=path, header=1, index_col=0)
+df = df.drop(['Open', 'Close', 'Adj Close', 'Volume'], axis='columns')
+
+my_trendbox = TrendBox(hi_lo_df=df)
+my_trendbox.calc_trendbox()
+my_trendbox.plot()
 
 #%%----------------------------------------------------------------------------
-    my_trendbox = TrendBox(hi_lo_df=df)
-
-#%%----------------------------------------------------------------------------
-    my_trendbox.plot()
-
-#%%----------------------------------------------------------------------------
-    my_trendbox_slope = my_trendbox.get_trendbox_slope()
+# my_trendbox_slope = my_trendbox.get_trendbox_slope()
