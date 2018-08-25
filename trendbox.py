@@ -1,12 +1,13 @@
 '''
 Preparations
 '''
-import time
+# import time
+# import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-import os
+
 
 plt.style.use('dark_background')
 plt.rcParams['figure.figsize'] = [13, 8]

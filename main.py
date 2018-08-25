@@ -11,10 +11,10 @@ def main():
     # t0 = time.clock()
 
     # Prepare data
-    path = 'Data\\aapl.csv'
+    path = 'Data\\nflx.csv'
     df = pd.read_csv(filepath_or_buffer=path, header=1, index_col=0)
     df = df.drop(['Open', 'Close', 'Adj Close', 'Volume'], axis='columns')
-    df = df[-500:]
+    # df = df[2300:2500]
 
     # t1 = time.clock()
     # print('Preparation in main(): %.4f' %(t1-t0))
