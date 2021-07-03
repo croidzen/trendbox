@@ -5,3 +5,6 @@
 
 # ignore python stuff
 __pycache__/
+
+#OS stuff
+.DS_Store
